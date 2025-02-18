@@ -16,7 +16,7 @@ class Utf8Codec extends Encoding {
   const Utf8Codec();
 
   @override
-  Converter<List<int>, String> get decoder => const Utf8Decoder();
+  Converter<List<int>, String> get decoder => Utf8Decoder().decoder;
 
   @override
   Converter<String, List<int>> get encoder => cnv.utf8.encoder;
@@ -27,14 +27,16 @@ class Utf8Codec extends Encoding {
 
 Encoding get utf8 => const Utf8Codec();
 
-class Utf8Decoder extends cnv.Utf8Decoder {
-  const Utf8Decoder({this.reportErrors = true}) : super(allowMalformed: true);
+class Utf8Decoder {
+  Utf8Decoder({this.reportErrors = true}) {
+    this.decoder = cnv.Utf8Decoder(allowMalformed: true);
+  }
 
+  late final cnv.Utf8Decoder decoder;
   final bool reportErrors;
 
-  @override
   String convert(List<int> codeUnits, [int start = 0, int? end]) {
-    final String result = super.convert(codeUnits, start, end);
+    final String result = decoder.convert(codeUnits, start, end);
     // Finding a unicode replacement character indicates that the input
     // was malformed.
     if (reportErrors && result.contains('\u{FFFD}')) {
